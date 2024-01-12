@@ -1,0 +1,134 @@
+{
+    "SOURCES": {
+        "EU": {
+            "FORMAT": "CSV",
+            "URL": "https://webgate.ec.europa.eu/fsd/fsf/public/files/csvFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw",
+            "PARAMS": {
+                "delimiter": ";"
+            }
+        },
+        "HM": {
+            "FORMAT": "CSV",
+            "URL": "https://ofsistorage.blob.core.windows.net/publishlive/2022format/ConList.csv",
+            "PARAMS": {
+                "skiprows": 1
+            }
+        },
+        "CONS_PRIM": {
+            "FORMAT": "CSV",
+            "URL": "https://www.treasury.gov/ofac/downloads/consolidated/cons_prim.csv",
+            "PARAMS": {
+                "na_values": "-0- ",
+                "engine": "python",
+                "skipfooter": 1,
+                "names": [
+                    "ent_num",
+                    "sdn_name",
+                    "sdn_type",
+                    "program",
+                    "title",
+                    "call_sign",
+                    "vess_type",
+                    "tonnage",
+                    "grt",
+                    "vess_flag",
+                    "vess_owner",
+                    "remarks"
+                ]
+            }
+        },
+        "CONS_ALT": {
+            "FORMAT": "CSV",
+            "URL": "https://www.treasury.gov/ofac/downloads/consolidated/cons_alt.csv",
+            "PARAMS": {
+                "na_values": "-0- ",
+                "engine": "python",
+                "skipfooter": 1,
+                "names": [
+                    "ent_num",
+                    "alt_num",
+                    "alt_type",
+                    "alt_name",
+                    "alt_remarks"
+                ]
+            }
+        },
+        "CONS_ADD": {
+            "FORMAT": "CSV",
+            "URL": "https://www.treasury.gov/ofac/downloads/consolidated/cons_add.csv",
+            "PARAMS": {
+                "na_values": "-0- ",
+                "engine": "python",
+                "skipfooter": 1,
+                "names": [
+                    "ent_num",
+                    "add_num",
+                    "address",
+                    "city_state_province_postalcode",
+                    "country",
+                    "address_remarks"
+                ]
+            }
+        },
+        "OFAC_SDN": {
+            "FORMAT": "CSV",
+            "URL": "https://www.treasury.gov/ofac/downloads/sdn.csv",
+            "PARAMS": {
+                "na_values": "-0- ",
+                "engine": "python",
+                "skipfooter": 1,
+                "names": [
+                    "ent_num",
+                    "sdn_name",
+                    "sdn_type",
+                    "program",
+                    "title",
+                    "call_sign",
+                    "vess_type",
+                    "tonnage",
+                    "grt",
+                    "vess_flag",
+                    "vess_owner",
+                    "remarks"
+                ]
+            }
+        }, 
+        "OFAC_ALT": {
+            "FORMAT": "CSV",
+            "URL": "https://www.treasury.gov/ofac/downloads/alt.csv",
+            "PARAMS": {
+                "na_values": "-0- ",
+                "engine": "python",
+                "skipfooter": 1,
+                "names": [
+                    "ent_num",
+                    "alt_num",
+                    "alt_type",
+                    "alt_name",
+                    "alt_remarks"
+                ]
+            }
+        },
+        "OFAC_ADD": {
+            "FORMAT": "CSV",
+            "URL": "https://www.treasury.gov/ofac/downloads/add.csv",
+            "PARAMS": {
+                "na_values": "-0- ",
+                "engine": "python",
+                "skipfooter": 1,
+                "names": [
+                    "ent_num",
+                    "add_num",
+                    "address",
+                    "city_state_province_postalcode",
+                    "country",
+                    "address_remarks"
+                ]
+            }
+        },
+        "UN": {
+            "FORMAT": "XML",
+            "URL": "https://scsanctions.un.org/resources/xml/en/consolidated.xml"
+        }
+    }
+}

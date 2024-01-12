@@ -1,0 +1,5 @@
+ipykernel
+requests
+xmltodict
+pandas
+pymongo
