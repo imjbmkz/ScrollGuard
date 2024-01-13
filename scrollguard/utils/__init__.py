@@ -1,1 +1,5 @@
-from ._utils import get_config
+from ._utils import (
+    ROOT_DIRECTORY,
+    get_config,
+    get_mongo_client
+)
