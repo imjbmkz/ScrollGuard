@@ -3,6 +3,13 @@ import urllib3
 import ssl
 import pandas as pd
 import xmltodict
+from ..utils import get_mongo_client
+
+""" 
+OTHER SOURCES TO CONSIDER: 
+    - https://sanctionscanner.com/blog/what-is-a-sanction-list-8
+    - https://github.com/moov-io/watchman
+"""
 
 """ BEGIN SECTION
 ISSUE: SSLError when downloading UN source via requests
@@ -43,11 +50,20 @@ def extract_csv(config: dict) -> pd.DataFrame:
     params = config["PARAMS"]
     return pd.read_csv(url, **params)
 
+def extract_excel(config: dict) -> pd.DataFrame:
+    """ Pass the source configuration from config.json 
+        {source_name: source_config}
+    """
+    url = config["URL"]
+    params = config["PARAMS"]
+    return pd.read_excel(url, **params)
+
 def extract_xml(config: dict) -> dict:
     """ Pass the source configuration from config.json 
         {source_name: source_config}
     """
     url = config["URL"]
+    xpath = config["XPATH"]
 
     try:
         # Try a normal GET request
@@ -60,7 +76,16 @@ def extract_xml(config: dict) -> dict:
             raise Exception(f"An error has occurred when sending request to {url}.")
 
     if response.ok:
-        return xmltodict.parse(response.content)
+        data_dict = xmltodict.parse(response.content)
+        for xp in xpath:
+            data_dict = data_dict[xp]
+        return data_dict
     
     else:
         raise Exception(f"An error has occurred when sending request to {url}. {response.status_code}")
+    
+def extract_collection(collection_name: str, database: str = "scrollguard") -> pd.DataFrame:
+    client = get_mongo_client()
+    db = client[database]
+    collection = db[collection_name]
+    return pd.DataFrame(collection.find({}, {"_id": 0}))

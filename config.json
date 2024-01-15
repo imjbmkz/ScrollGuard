@@ -4,7 +4,8 @@
             "FORMAT": "CSV",
             "URL": "https://webgate.ec.europa.eu/fsd/fsf/public/files/csvFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw",
             "PARAMS": {
-                "delimiter": ";"
+                "delimiter": ";",
+                "low_memory": false
             }
         },
         "HM": {
@@ -126,13 +127,74 @@
                 ]
             }
         },
-        "UN": {
+        "AU_SANCTIONS": {
+            "FORMAT": "EXCEL",
+            "URL": "https://www.dfat.gov.au/sites/default/files/regulation8_consolidated.xlsx",
+            "PARAMS": {
+                "names": [
+                    "reference",
+                    "full_name",
+                    "type",
+                    "name_type",
+                    "date_of_birth",
+                    "place_of_birth",
+                    "citizenship",
+                    "address",
+                    "additional_information",
+                    "listing_information",
+                    "committees",
+                    "control_date"
+                ]
+            }
+        },
+        "UN_INDIVIDUAL": {
             "FORMAT": "XML",
-            "URL": "https://scsanctions.un.org/resources/xml/en/consolidated.xml"
+            "URL": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
+            "XPATH": ["CONSOLIDATED_LIST", "INDIVIDUALS", "INDIVIDUAL"]
+        },
+        "UN_ENTITY": {
+            "FORMAT": "XML",
+            "URL": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
+            "XPATH": ["CONSOLIDATED_LIST", "ENTITIES", "ENTITY"]
         },
         "CA_SANCTIONS": {
             "FORMAT": "XML",
-            "URL": "https://www.international.gc.ca/world-monde/assets/office_docs/international_relations-relations_internationales/sanctions/sema-lmes.xml"
+            "URL": "https://www.international.gc.ca/world-monde/assets/office_docs/international_relations-relations_internationales/sanctions/sema-lmes.xml",
+            "XPATH": ["data-set", "record"]
         }
+    },
+
+    "TRANSFORM": {
+        "HM": {
+            "SOURCE": "HM",
+            "STEPS": {
+                "SELECT_FIELDS": {
+                    "ID": "Group ID",
+                    "FULL_NAME": ["Name 1", "Name 2", "Name 3", "Name 4", "Name 5", "Name 6"],
+                    "NAME_TYPE": "Group Type",
+                    "DATE_OF_BIRTH": "DOB",
+                    "COUNTRY_OF_BIRTH": "Country of Birth",
+                    "NATIONALITY": "Nationality"
+                }
+            }
+        },
+        "OFAC_NSDN": {
+            "SOURCE": ["CONS_PRIM", "CONS_ALT", "CONS_ADD"],
+            "STEPS": {
+                "MERGE_DATASETS": {
+                    "JOIN_KEY": "ent_num" 
+                },
+                "SELECT_FIELDS": {
+                    "ID": "ent_num",
+                    "FULL_NAME": "sdn_name",
+                    "NAME_TYPE": "sdn_type"
+                }
+            }
+        }
+    },
+
+    "GENERAL": {
+        "MIN_NAME_LENGTH": 5
     }
+
 }

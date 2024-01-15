@@ -3,4 +3,7 @@ ipykernel
 requests
 xmltodict
 pandas
+openpyxl
 pymongo
+jellyfish
+levenshtein

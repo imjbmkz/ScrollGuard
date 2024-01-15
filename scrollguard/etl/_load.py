@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from ..utils import get_mongo_client
 
@@ -10,7 +11,11 @@ def load_to_mongo(collection_name: str, data: dict | pd.DataFrame):
     collection = db[collection_name]
     
     # Convert dataframe to dict 
-    data_dict = data.to_dict(orient="records") if isinstance(data, pd.DataFrame) else data
+    if isinstance(data, pd.DataFrame):
+        data.replace({np.nan: None}, inplace=True) # Fix on NaT
+        data_dict = data.to_dict(orient="records") 
+    else: 
+        data_dict = data
 
     # Drop collections first
     collection.drop()
