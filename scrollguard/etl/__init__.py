@@ -6,7 +6,14 @@ from ._extract import (
 )
 
 from ._transform import (
-    HmTransformer
+    Transformer,
+    standardize_name,
+    metaphone_name,
+    merge_data,
+    append_data,
+    select_fields,
+    dict_to_frame,
+    parse_column
 )
 
 from ._load import (

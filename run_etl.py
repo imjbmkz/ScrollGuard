@@ -1,5 +1,5 @@
 from scrollguard.utils import get_config, get_logger
-from scrollguard.etl import extract_csv, extract_xml, extract_excel, load_to_mongo
+from scrollguard.etl import *
 
 if __name__=="__main__":
     logger = get_logger()
@@ -12,6 +12,10 @@ if __name__=="__main__":
         "XML": extract_xml
     }
     config = get_config()["SOURCES"]
+
+    ##################################
+    # STEP 1: DOWNLOAD RAW SOURCES
+    ##################################
 
     # Iterate through the registered sources
     for source_name, conf in config.items():
@@ -27,7 +31,7 @@ if __name__=="__main__":
                 # Load to MongoDB
                 try:
                     logger.info(f"Loading {source_name} to database.")
-                    load_to_mongo(source_name + "_RAW", data)
+                    load_to_mongo(f"{source_name}_RAW", data)
                 except Exception as e:
                     logger.error(f"An error has occured in loading {source_name} data to MongoDB. {e}")
 
@@ -36,3 +40,23 @@ if __name__=="__main__":
 
         except Exception as e:
             logger.error(f"There is no registered parser for file format {source_format}. {e}")
+
+    ##################################
+    # STEP 2: APPLY PREPROCESSING STEPS
+    ##################################
+    clean_sources = get_config()["TRANSFORM"].keys()
+    clean_dfs = []
+    for clean_source in clean_sources:
+        # Apply data transformer based on configuration 
+        clean_data = Transformer(source_name=clean_source, transform=True).processed_data
+        clean_dfs.append(clean_data)
+        # Load to MongoDB
+        try:
+            logger.info(f"Loading {clean_source} to database.")
+            load_to_mongo(f"{clean_source}_CLEAN", clean_data)
+        except Exception as e:
+            logger.error(f"An error has occured in loading {clean_source} data to MongoDB. {e}")
+
+    # Consolidate clean sanction sources
+    consolidated = append_data(clean_dfs)
+    load_to_mongo("CONSOLIDATED_SANCTIONS", consolidated)

@@ -2,29 +2,56 @@ import re
 import pandas as pd
 from functools import reduce
 from jellyfish import metaphone
-from ..utils import get_config, get_mongo_client
+from ..utils import get_config
 from ..etl import extract_collection
 
 transform_config = get_config()["TRANSFORM"]
 general_config = get_config()["GENERAL"]
 MIN_NAME_LENGTH = general_config["MIN_NAME_LENGTH"]
 
-class HmTransformer:
-    def __init__(self, transform: bool = True):
-        self.raw_data = extract_collection("HM")
+class Transformer:
+    def __init__(self, source_name: str, transform: bool = False):
+        # Get configuration
+        self.source_name = source_name
+        self.config = transform_config[source_name]
+
+        # Join collections needed if list of collections was supplied
+        if isinstance(self.config["SOURCE"], list):
+            self.raw_data = [extract_collection(f"{source}_RAW") for source in self.config["SOURCE"]] 
+        # Get collection if there is only one input
+        else:
+            self.raw_data = extract_collection(f"{source_name}_RAW")
+
+        if transform:
+            self.transform_data()
+
+    def transform_data(self):
         self.processed_data = self.raw_data
-        self.config = transform_config["HM"]
-        self.transform = transform
-        if self.transform:
-            self.select_required_fields()
-            self.get_transformed_names()    
+        for step_name, step_config in self.config["STEPS"].items():
+            if step_name=="MERGE_DATASETS":
+                self.processed_data = merge_data(self.processed_data, step_config["JOIN_KEY"])
 
-    def select_required_fields(self):
-        self.processed_data = select_fields(self.raw_data, self.config["SELECT_FIELDS"])
+            elif step_name=="SELECT_FIELDS":
+                self.processed_data = select_fields(self.processed_data, step_config)
 
-    def get_transformed_names(self):
+            elif step_name=="ADD_COLUMNS":
+                for key, value in step_config.items():
+                    self.processed_data[key] = value
+
+            elif step_name=="PARSE_COLUMN":
+                for key, value in step_config.items():
+                    parsed = parse_column(data=self.raw_data[list(value.values())[0:2]],**{k.lower():v for k,v in value.items()})
+                    self.processed_data = self.processed_data.merge(parsed, how="left", left_on="ID", right_on=value["REFERENCE"])
+                    self.processed_data.drop(value["REFERENCE"], axis=1, inplace=True)
+                    self.processed_data.rename(columns={value["TARGET_COLUMN"]:key}, inplace=True)
+
+        # Add preprocessed names
         self.processed_data["STANDARDIZED_NAME"] = self.processed_data["FULL_NAME"].map(standardize_name)
         self.processed_data["METAPHONE_NAME"] = self.processed_data["STANDARDIZED_NAME"].map(metaphone_name)
+
+        # Add source name
+        self.processed_data.insert(0, "SOURCE_NAME", self.source_name)
+        self.processed_data.drop_duplicates(inplace=True)
 
 def standardize_name(fullname: str) -> str:
     std_name = re.sub("-|/", " ", str(fullname).upper())  # replace - and / with space
@@ -42,6 +69,9 @@ def merge_data(dfs: list, join_key: str) -> pd.DataFrame:
     merged_data = reduce(lambda left, right: pd.merge(left, right, on=join_key, how="left"), dfs)
     return merged_data
 
+def append_data(dfs: list) -> pd.DataFrame:
+    return pd.concat(dfs, ignore_index=True).drop_duplicates()
+
 def select_fields(data: pd.DataFrame, config: dict) -> pd.DataFrame:
     data_transformed = data.copy()
     new_columns = list(config.keys())
@@ -57,3 +87,17 @@ def select_fields(data: pd.DataFrame, config: dict) -> pd.DataFrame:
     data_transformed = data_transformed[new_columns]
     return data_transformed
 
+def dict_to_frame(data: dict | list) -> pd.DataFrame:
+    try:
+        return pd.DataFrame(data)
+    except:
+        return pd.DataFrame([data])    
+
+def parse_column(data: pd.DataFrame, reference: str, column_to_parse: str, target_column: str) -> pd.DataFrame:
+    dfs = []
+    for _, row in data[data[column_to_parse].notna()][[reference,column_to_parse]].iterrows():
+        d = dict_to_frame(row[column_to_parse])
+        d.insert(0, reference, row[reference])
+        dfs.append(d)
+    parsed = pd.concat(dfs)[[reference, target_column]].drop_duplicates(ignore_index=True)
+    return parsed.dropna()

@@ -165,6 +165,19 @@
     },
 
     "TRANSFORM": {
+        "EU": {
+            "SOURCE": "EU",
+            "STEPS": {
+                "SELECT_FIELDS": {
+                    "ID": "Entity_LogicalId",
+                    "FULL_NAME": "NameAlias_WholeName",
+                    "NAME_TYPE": "Entity_SubjectType_ClassificationCode",
+                    "DATE_OF_BIRTH": "BirthDate_BirthDate",
+                    "COUNTRY_OF_BIRTH": "BirthDate_CountryDescription",
+                    "NATIONALITY": "Citizenship_CountryDescription"
+                }
+            }
+        },
         "HM": {
             "SOURCE": "HM",
             "STEPS": {
@@ -188,6 +201,71 @@
                     "ID": "ent_num",
                     "FULL_NAME": "sdn_name",
                     "NAME_TYPE": "sdn_type"
+                }
+            }
+        },
+        "OFAC_SDN": {
+            "SOURCE": ["OFAC_SDN", "OFAC_ALT", "OFAC_ADD"],
+            "STEPS": {
+                "MERGE_DATASETS": {
+                    "JOIN_KEY": "ent_num" 
+                },
+                "SELECT_FIELDS": {
+                    "ID": "ent_num",
+                    "FULL_NAME": "sdn_name",
+                    "NAME_TYPE": "sdn_type"
+                }
+            }
+        },
+        "AU_SANCTIONS": {
+            "SOURCE": "AU_SANCTIONS",
+            "STEPS": {
+                "SELECT_FIELDS": {
+                    "ID": "reference",
+                    "FULL_NAME": "full_name",
+                    "NAME_TYPE": "name_type",
+                    "DATE_OF_BIRTH": "date_of_birth",
+                    "COUNTRY_OF_BIRTH": "place_of_birth",
+                    "NATIONALITY": "citizenship"
+                }
+            }
+        },
+        "UN_INDIVIDUAL": {
+            "SOURCE": "UN_INDIVIDUAL",
+            "STEPS": {
+                "SELECT_FIELDS": {
+                    "ID": "DATAID",
+                    "FULL_NAME": ["FIRST_NAME", "SECOND_NAME", "THIRD_NAME", "FOURTH_NAME"]
+                },
+                "ADD_COLUMNS": {
+                    "NAME_TYPE": "INDIVIDUAL"
+                },
+                "PARSE_COLUMN": {
+                    "DATE_OF_BIRTH": {
+                        "REFERENCE": "DATAID",
+                        "COLUMN_TO_PARSE": "INDIVIDUAL_DATE_OF_BIRTH",
+                        "TARGET_COLUMN": "DATE"
+                    },
+                    "COUNTRY_OF_BIRTH": {
+                        "REFERENCE": "DATAID",
+                        "COLUMN_TO_PARSE": "INDIVIDUAL_PLACE_OF_BIRTH",
+                        "TARGET_COLUMN": "COUNTRY"
+                    },
+                    "NATIONALITY": {
+                        "REFERENCE": "DATAID",
+                        "COLUMN_TO_PARSE": "NATIONALITY",
+                        "TARGET_COLUMN": "VALUE"
+                    } 
+                }
+            }
+        },
+        "CA_SANCTIONS": {
+            "SOURCE": "CA_SANCTIONS",
+            "STEPS": {
+                "SELECT_FIELDS": {
+                    "ID": "Item",
+                    "FULL_NAME": ["GivenName", "LastName"],
+                    "DATE_OF_BIRTH": "DateOfBirth"
                 }
             }
         }
