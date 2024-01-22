@@ -259,6 +259,15 @@
                 }
             }
         },
+        "UN_ENTITY": {
+            "SOURCE": "UN_ENTITY",
+            "STEPS": {
+                "SELECT_FIELDS": {
+                    "ID": "DATAID",
+                    "FULL_NAME": "FIRST_NAME"
+                }
+            }
+        },
         "CA_SANCTIONS": {
             "SOURCE": "CA_SANCTIONS",
             "STEPS": {

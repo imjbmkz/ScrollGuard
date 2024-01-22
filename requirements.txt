@@ -7,3 +7,4 @@ openpyxl
 pymongo
 jellyfish
 levenshtein
+tqdm
