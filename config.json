@@ -281,7 +281,8 @@
     },
 
     "GENERAL": {
-        "MIN_NAME_LENGTH": 5
+        "MIN_NAME_LENGTH": 5,
+        "SCREENING_THRESH": 0.8
     }
 
 }
