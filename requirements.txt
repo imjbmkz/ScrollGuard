@@ -8,3 +8,5 @@ pymongo
 jellyfish
 levenshtein
 tqdm
+fastapi
+uvicorn[standard]
