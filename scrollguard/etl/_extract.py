@@ -83,7 +83,7 @@ def extract_xml(config: dict) -> dict:
     
     else:
         raise Exception(f"An error has occurred when sending request to {url}. {response.status_code}")
-    
+
 def extract_collection(collection_name: str, database: str = "scrollguard") -> pd.DataFrame:
     client = get_mongo_client()
     db = client[database]

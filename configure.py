@@ -1,5 +1,5 @@
 import json
-from scrollguard.utils import get_mongo_client
+from scrollguard.utils import get_mongo_cloud_client as get_mongo_client
 
 if __name__=="__main__":
 

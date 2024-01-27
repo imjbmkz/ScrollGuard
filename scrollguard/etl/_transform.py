@@ -2,7 +2,7 @@ import re
 import pandas as pd
 from functools import reduce
 from jellyfish import metaphone
-from ..utils import get_config
+from ..utils import get_config, get_mongo_client
 
 source_config = get_config().find_one({"source": "SOURCES"}, {"_id":0, "value":1})["value"]
 general_config = get_config().find_one({"source": "GENERAL"}, {"_id":0, "value":1})["value"]
@@ -94,3 +94,8 @@ def parse_column(data: pd.DataFrame, reference: str, column_to_parse: str, targe
         dfs.append(d)
     parsed = pd.concat(dfs)[[reference, target_column]].drop_duplicates(ignore_index=True)
     return parsed.dropna()
+
+def drop_collection(collection: str):
+    client = get_mongo_client()
+    db = client["scrollguard"]
+    db.drop_collection(collection)

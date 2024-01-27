@@ -13,7 +13,8 @@ from ._transform import (
     append_data,
     select_fields,
     dict_to_frame,
-    parse_column
+    parse_column,
+    drop_collection
 )
 
 from ._load import (

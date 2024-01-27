@@ -22,7 +22,8 @@ Make sure you have installed the following on your machine.
 `pip install -r requirements.txt`
 
 5. Add the following environment variables to the activate file.
-`MONGO_HOST=mongodb://mongodb0.example.com:28015`
+`MONGO_HOST=mongodb://mongodb0.example.com:28015 # for local MongoDB server`
+`MONGO_CLIENT=mongodb://mongodb0.example.com:28015 # for cloud MongoDB server`
 
 6. Run `configure.py` to add basic configuirations to MongoDB.
 `python3 configure.py`

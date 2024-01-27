@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from ..utils import get_mongo_client
 
-def load_to_mongo(collection_name: str, data: dict | pd.DataFrame):
+def load_to_mongo(collection_name: str, data: dict | pd.DataFrame, drop_collection: bool = False):
     """ Load data to database
     """
     # Configure MongoDB destination
@@ -18,7 +18,8 @@ def load_to_mongo(collection_name: str, data: dict | pd.DataFrame):
         data_dict = data
 
     # Drop collections first
-    collection.drop()
+    if drop_collection:
+        collection.drop()
 
     # Insert data into collection
     collection.insert_many(data_dict) if isinstance(data_dict, list) else collection.insert_one(data_dict)
