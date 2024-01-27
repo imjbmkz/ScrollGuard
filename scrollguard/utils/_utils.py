@@ -1,15 +1,20 @@
 import os
-import json
 from loguru import logger
 from pathlib import Path
 from pymongo import MongoClient
+from pymongo.collection import Collection
 
 ROOT_DIRECTORY = Path(__file__).parent.parent.parent
-CONFIG_PATH = ROOT_DIRECTORY / "config.json"
 
-def get_config() -> dict:
-    with open(CONFIG_PATH) as fp:
-        return json.load(fp)
+def get_config() -> Collection:
+    # ====================
+    # Transfer config from config.json to Mongo
+    # ====================
+    # with open(CONFIG_PATH) as fp:
+    #     return json.load(fp)
+    client = get_mongo_client()
+    db = client["scrollguard"]
+    return db["CONFIG"]
     
 def get_mongo_client() -> MongoClient:
     host = os.environ["MONGO_HOST"]

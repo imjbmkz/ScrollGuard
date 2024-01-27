@@ -71,4 +71,4 @@ if __name__=="__main__":
     results = screen_name(names_to_screen)
 
     # Display results on the console
-    pprint(results)
+    pprint(results, sort_dicts=False)

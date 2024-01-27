@@ -3,24 +3,17 @@ import pandas as pd
 from functools import reduce
 from jellyfish import metaphone
 from ..utils import get_config
-from ..etl import extract_collection
 
-transform_config = get_config()["TRANSFORM"]
-general_config = get_config()["GENERAL"]
+source_config = get_config().find_one({"source": "SOURCES"}, {"_id":0, "value":1})["value"]
+general_config = get_config().find_one({"source": "GENERAL"}, {"_id":0, "value":1})["value"]
 MIN_NAME_LENGTH = general_config["MIN_NAME_LENGTH"]
 
 class Transformer:
-    def __init__(self, source_name: str, transform: bool = False):
+    def __init__(self, source_name: str, data: dict | pd.DataFrame | list, transform: bool = False):
         # Get configuration
         self.source_name = source_name
-        self.config = transform_config[source_name]
-
-        # Join collections needed if list of collections was supplied
-        if isinstance(self.config["SOURCE"], list):
-            self.raw_data = [extract_collection(f"{source}_RAW") for source in self.config["SOURCE"]] 
-        # Get collection if there is only one input
-        else:
-            self.raw_data = extract_collection(f"{source_name}_RAW")
+        self.config = source_config[source_name]
+        self.raw_data = data
 
         if transform:
             self.transform_data()
