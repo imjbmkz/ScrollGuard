@@ -3,7 +3,7 @@ import urllib3
 import ssl
 import pandas as pd
 import xmltodict
-from ..utils import get_mongo_client
+from ..utils import get_mongo_cloud_client as get_mongo_client
 
 """ 
 OTHER SOURCES TO CONSIDER: 

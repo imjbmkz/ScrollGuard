@@ -14,7 +14,7 @@ def get_config() -> Collection:
     # ====================
     # with open(CONFIG_PATH) as fp:
     #     return json.load(fp)
-    client = get_mongo_client()
+    client = get_mongo_cloud_client()
     db = client["scrollguard"]
     return db["CONFIG"]
     

@@ -2,7 +2,7 @@ import re
 import pandas as pd
 from functools import reduce
 from jellyfish import metaphone
-from ..utils import get_config, get_mongo_client
+from ..utils import get_config, get_mongo_cloud_client as get_mongo_client
 
 source_config = get_config().find_one({"source": "SOURCES"}, {"_id":0, "value":1})["value"]
 general_config = get_config().find_one({"source": "GENERAL"}, {"_id":0, "value":1})["value"]
