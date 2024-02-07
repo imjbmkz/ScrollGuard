@@ -7,7 +7,7 @@ Make sure you have installed the following on your machine.
 - [Git](https://git-scm.com/)
 
 ## Setting-up
-### Virtual environments and basic configurations
+### Virtual environment and basic configurations
 1. Create your project directory.
 
 `mkdir scrollguard`
