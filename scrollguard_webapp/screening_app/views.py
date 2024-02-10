@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 def homepage(request):
-    return render(request, "screening_app/home.html", {"title": "Home"})
+    return render(request, "screening_app/home.html")
 
 def login(request):
     return render(request, "screening_app/login.html", {"title": "Login"})
