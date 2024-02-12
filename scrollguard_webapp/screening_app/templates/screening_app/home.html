@@ -1,23 +1,5 @@
 {% extends "screening_app/base.html" %}
 {% block content %}
-<!-- Header menu -->
-<nav class="navbar navbar-expand-lg">
-  <div class="container-fluid">
-    <a class="navbar-brand scrollguard-font" href="#">ScrollGuard</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link active" aria-current="page" href="{% url 'scrollguard-home' %}">home</a>
-        <a class="nav-link" href="{% url 'scrollguard-demo' %}">demo</a>
-        <a class="nav-link" href="{% url 'scrollguard-contact' %}">contact</a>
-        <a class="nav-link" href="{% url 'scrollguard-login' %}">login</a>
-      </div>
-    </div>
-  </div>
-</nav>
-
 <!-- First page -->
 <div class="container main-page-text">
   <p class="scrollguard-font-h1">ScrollGuard</p>
@@ -25,12 +7,12 @@
     <p class="scrollguard-font-h2">Sanction screening made simple. </p>
   </div>
   <div class="container">
-    <a href="{% url 'scrollguard-demo' %}">
-      <button type="button" class="btn btn-lg btn-light" >Try our demo</button>
+    <a href="{% url 'scrollguard-login' %}">
+      <button type="button" class="btn btn-lg btn-light" id="btnDemo" >Try our demo</button>
     </a>
   </div>
   <div class="m-auto py-3">
-    <a class="link-secondary" href="{% url 'scrollguard-login' %}">
+    <a class="link-light" href="{% url 'scrollguard-login' %}">
       Already have an account? Log in here.
     </a>
   </div>

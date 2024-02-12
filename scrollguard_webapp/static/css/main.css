@@ -39,5 +39,5 @@
 
 @keyframes blinking {
     from { border-color: white; }
-    to { border-color: rgb(7, 5, 42); }
+    to { border-color: #212529; }
   }
