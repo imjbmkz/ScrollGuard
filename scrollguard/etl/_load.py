@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from ..utils import get_mongo_cloud_client as get_mongo_client
+from ..utils import get_mongo_client
 
 def load_to_mongo(collection_name: str, data: dict | pd.DataFrame, drop_collection: bool = False):
     """ Load data to database

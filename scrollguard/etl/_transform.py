@@ -2,10 +2,11 @@ import re
 import pandas as pd
 from functools import reduce
 from jellyfish import metaphone
-from ..utils import get_config, get_mongo_cloud_client as get_mongo_client
+from ..utils import get_config, get_mongo_client
 
-source_config = get_config().find_one({"source": "SOURCES"}, {"_id":0, "value":1})["value"]
-general_config = get_config().find_one({"source": "GENERAL"}, {"_id":0, "value":1})["value"]
+root_config = get_config()
+source_config = root_config.find_one({"CONFIG_TYPE": "SOURCES"}, {"_id":0, "VALUE":1})["VALUE"]
+general_config = root_config.find_one({"CONFIG_TYPE": "GENERAL"}, {"_id":0, "VALUE":1})["VALUE"]
 MIN_NAME_LENGTH = general_config["MIN_NAME_LENGTH"]
 
 class Transformer:

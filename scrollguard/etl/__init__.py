@@ -1,4 +1,5 @@
 from ._extract import (
+    download_file,
     extract_csv,
     extract_excel,
     extract_xml,

@@ -3,7 +3,8 @@ import urllib3
 import ssl
 import pandas as pd
 import xmltodict
-from ..utils import get_mongo_cloud_client as get_mongo_client
+from pathlib import Path
+from ..utils import get_mongo_client, ROOT_DIRECTORY
 
 """ 
 OTHER SOURCES TO CONSIDER: 
@@ -42,29 +43,12 @@ def get_legacy_session():
 """ END SECTION
 """
 
-def extract_csv(config: dict) -> pd.DataFrame:
-    """ Pass the source configuration from config.json 
-        {source_name: source_config}
-    """
-    url = config["URL"]
-    params = config["PARAMS"]
-    return pd.read_csv(url, **params)
-
-def extract_excel(config: dict) -> pd.DataFrame:
-    """ Pass the source configuration from config.json 
-        {source_name: source_config}
-    """
-    url = config["URL"]
-    params = config["PARAMS"]
-    return pd.read_excel(url, **params)
-
-def extract_xml(config: dict) -> dict:
-    """ Pass the source configuration from config.json 
-        {source_name: source_config}
-    """
-    url = config["URL"]
-    xpath = config["XPATH"]
-
+def download_file(url: str, file_path: str | Path = None, 
+                  save_file: bool = False) -> None | requests.Response:
+    # Raise an error when file_path is not supplied, but save_file
+    if file_path is None and save_file:
+        raise ValueError("File is expected to be downloaded, but no file_path supplied.")
+    
     try:
         # Try a normal GET request
         response = requests.get(url)
@@ -74,16 +58,58 @@ def extract_xml(config: dict) -> dict:
             response = get_legacy_session().get(url)
         except:
             raise Exception(f"An error has occurred when sending request to {url}.")
-
-    if response.ok:
-        data_dict = xmltodict.parse(response.content)
-        for xp in xpath:
-            data_dict = data_dict[xp]
-        return data_dict
     
-    else:
-        raise Exception(f"An error has occurred when sending request to {url}. {response.status_code}")
+    # Download the file if save_file=True. Otherwise, just return the response.
+    if not save_file:
+        return response
+    with open(file_path, "wb") as fp:
+        fp.write(response.content)
 
+def extract_csv(config: dict) -> pd.DataFrame:
+    # Set variables
+    url = config["URL"]
+    source_name = config["NAME"]
+    source_format = config["FORMAT"]
+    params = config["PARAMS"]
+    file_path = ROOT_DIRECTORY / f"data/raw/{source_name}.{source_format}"
+    
+    # Download the file first to data/raw
+    download_file(url, file_path, save_file=True)
+
+    # Return dataframe
+    return pd.read_csv(file_path, **params)
+
+def extract_excel(config: dict) -> pd.DataFrame:
+    # Set variables
+    url = config["URL"]
+    source_name = config["NAME"]
+    source_format = config["FORMAT"]
+    params = config["PARAMS"]
+    file_path = ROOT_DIRECTORY / f"data/raw/{source_name}.{source_format}"
+    
+    # Download the file first to data/raw
+    download_file(url, file_path, save_file=True)
+
+    # Return dataframe
+    return pd.read_excel(file_path, **params)
+
+def extract_xml(config: dict) -> dict:
+    """ Pass the source configuration from config.json 
+        {source_name: source_config}
+    """
+    # Set variables
+    url = config["URL"]
+    source_name = config["NAME"]
+    source_format = config["FORMAT"]
+    file_path = ROOT_DIRECTORY / f"data/raw/{source_name}.{source_format}"
+    
+    # Download the file first to data/raw
+    download_file(url, file_path, save_file=True)
+
+    # Return dict
+    with open(file_path, "rb") as fp:
+        return xmltodict.parse(fp)
+    
 def extract_collection(collection_name: str, database: str = "scrollguard") -> pd.DataFrame:
     client = get_mongo_client()
     db = client[database]

@@ -1,145 +1,289 @@
-[{"source": "SOURCES",
-  "value": {"EU": {"FORMAT": "CSV",
-    "URL": "https://webgate.ec.europa.eu/fsd/fsf/public/files/csvFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw",
-    "PARAMS": {"delimiter": ";", "low_memory": false},
-    "STEPS": {"SELECT_FIELDS": {"ID": "Entity_LogicalId",
-      "FULL_NAME": "NameAlias_WholeName",
-      "NAME_TYPE": "Entity_SubjectType_ClassificationCode",
-      "DATE_OF_BIRTH": "BirthDate_BirthDate",
-      "COUNTRY_OF_BIRTH": "BirthDate_CountryDescription",
-      "NATIONALITY": "Citizenship_CountryDescription"}}},
-   "HM": {"FORMAT": "CSV",
-    "URL": "https://ofsistorage.blob.core.windows.net/publishlive/2022format/ConList.csv",
-    "PARAMS": {"skiprows": 1},
-    "STEPS": {"SELECT_FIELDS": {"ID": "Group ID",
-      "FULL_NAME": ["Name 1",
-       "Name 2",
-       "Name 3",
-       "Name 4",
-       "Name 5",
-       "Name 6"],
-      "NAME_TYPE": "Group Type",
-      "DATE_OF_BIRTH": "DOB",
-      "COUNTRY_OF_BIRTH": "Country of Birth",
-      "NATIONALITY": "Nationality"}}},
-   "CONS_NSDN": {"FORMAT": "CSV",
-    "URL": ["https://www.treasury.gov/ofac/downloads/consolidated/cons_prim.csv",
-     "https://www.treasury.gov/ofac/downloads/consolidated/cons_alt.csv",
-     "https://www.treasury.gov/ofac/downloads/consolidated/cons_add.csv"],
-    "NAMES": ["CONS_PRIM", "CONS_ALT", "CONS_ADD"],
-    "PARAMS": [{"na_values": "-0- ",
-      "engine": "python",
-      "skipfooter": 1,
-      "names": ["ent_num",
-       "sdn_name",
-       "sdn_type",
-       "program",
-       "title",
-       "call_sign",
-       "vess_type",
-       "tonnage",
-       "grt",
-       "vess_flag",
-       "vess_owner",
-       "remarks"]},
-     {"na_values": "-0- ",
-      "engine": "python",
-      "skipfooter": 1,
-      "names": ["ent_num", "alt_num", "alt_type", "alt_name", "alt_remarks"]},
-     {"na_values": "-0- ",
-      "engine": "python",
-      "skipfooter": 1,
-      "names": ["ent_num",
-       "add_num",
-       "address",
-       "city_state_province_postalcode",
-       "country",
-       "address_remarks"]}],
-    "STEPS": {"MERGE_DATASETS": {"JOIN_KEY": "ent_num"},
-     "SELECT_FIELDS": {"ID": "ent_num",
-      "FULL_NAME": "sdn_name",
-      "NAME_TYPE": "sdn_type"}}},
-   "OFAC_SDN": {"FORMAT": "CSV",
-    "URL": ["https://www.treasury.gov/ofac/downloads/sdn.csv",
-     "https://www.treasury.gov/ofac/downloads/alt.csv",
-     "https://www.treasury.gov/ofac/downloads/add.csv"],
-    "NAMES": ["OFAC_SDN", "OFAC_ALT", "OFAC_ADD"],
-    "PARAMS": [{"na_values": "-0- ",
-      "engine": "python",
-      "skipfooter": 1,
-      "names": ["ent_num",
-       "sdn_name",
-       "sdn_type",
-       "program",
-       "title",
-       "call_sign",
-       "vess_type",
-       "tonnage",
-       "grt",
-       "vess_flag",
-       "vess_owner",
-       "remarks"]},
-     {"na_values": "-0- ",
-      "engine": "python",
-      "skipfooter": 1,
-      "names": ["ent_num", "alt_num", "alt_type", "alt_name", "alt_remarks"]},
-     {"na_values": "-0- ",
-      "engine": "python",
-      "skipfooter": 1,
-      "names": ["ent_num",
-       "add_num",
-       "address",
-       "city_state_province_postalcode",
-       "country",
-       "address_remarks"]}],
-    "STEPS": {"MERGE_DATASETS": {"JOIN_KEY": "ent_num"},
-     "SELECT_FIELDS": {"ID": "ent_num",
-      "FULL_NAME": "sdn_name",
-      "NAME_TYPE": "sdn_type"}}},
-   "AU_SANCTIONS": {"FORMAT": "EXCEL",
-    "URL": "https://www.dfat.gov.au/sites/default/files/regulation8_consolidated.xlsx",
-    "PARAMS": {"names": ["reference",
-      "full_name",
-      "type",
-      "name_type",
-      "date_of_birth",
-      "place_of_birth",
-      "citizenship",
-      "address",
-      "additional_information",
-      "listing_information",
-      "committees",
-      "control_date"]},
-    "STEPS": {"SELECT_FIELDS": {"ID": "reference",
-      "FULL_NAME": "full_name",
-      "NAME_TYPE": "name_type",
-      "DATE_OF_BIRTH": "date_of_birth",
-      "COUNTRY_OF_BIRTH": "place_of_birth",
-      "NATIONALITY": "citizenship"}}},
-   "UN_INDIVIDUAL": {"FORMAT": "XML",
-    "URL": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
-    "XPATH": ["CONSOLIDATED_LIST", "INDIVIDUALS", "INDIVIDUAL"],
-    "STEPS": {"SELECT_FIELDS": {"ID": "DATAID",
-      "FULL_NAME": ["FIRST_NAME", "SECOND_NAME", "THIRD_NAME", "FOURTH_NAME"]},
-     "ADD_COLUMNS": {"NAME_TYPE": "INDIVIDUAL"},
-     "PARSE_COLUMN": {"DATE_OF_BIRTH": {"REFERENCE": "DATAID",
-       "COLUMN_TO_PARSE": "INDIVIDUAL_DATE_OF_BIRTH",
-       "TARGET_COLUMN": "DATE"},
-      "COUNTRY_OF_BIRTH": {"REFERENCE": "DATAID",
-       "COLUMN_TO_PARSE": "INDIVIDUAL_PLACE_OF_BIRTH",
-       "TARGET_COLUMN": "COUNTRY"},
-      "NATIONALITY": {"REFERENCE": "DATAID",
-       "COLUMN_TO_PARSE": "NATIONALITY",
-       "TARGET_COLUMN": "VALUE"}}}},
-   "UN_ENTITY": {"FORMAT": "XML",
-    "URL": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
-    "XPATH": ["CONSOLIDATED_LIST", "ENTITIES", "ENTITY"],
-    "STEPS": {"SELECT_FIELDS": {"ID": "DATAID", "FULL_NAME": "FIRST_NAME"}}},
-   "CA_SANCTIONS": {"FORMAT": "XML",
-    "URL": "https://www.international.gc.ca/world-monde/assets/office_docs/international_relations-relations_internationales/sanctions/sema-lmes.xml",
-    "XPATH": ["data-set", "record"],
-    "STEPS": {"SELECT_FIELDS": {"ID": "Item",
-      "FULL_NAME": ["GivenName", "LastName"],
-      "DATE_OF_BIRTH": "DateOfBirth"}}}}},
- {"source": "GENERAL",
-  "value": {"MIN_NAME_LENGTH": 5, "SCREENING_THRESH": 0.8}}]
+[
+  {
+      "CONFIG_TYPE": "SOURCES",
+      "VALUE": [
+          {
+              "NAME": "EU",
+              "FORMAT": "CSV",
+              "URL": "https://webgate.ec.europa.eu/fsd/fsf/public/files/csvFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw",
+              "PARAMS": {
+                  "delimiter": ";",
+                  "low_memory": false
+              },
+              "STEPS": {
+                  "SELECT_FIELDS": {
+                      "ID": "Entity_LogicalId",
+                      "FULL_NAME": "NameAlias_WholeName",
+                      "NAME_TYPE": "Entity_SubjectType_ClassificationCode",
+                      "DATE_OF_BIRTH": "BirthDate_BirthDate",
+                      "COUNTRY_OF_BIRTH": "BirthDate_CountryDescription",
+                      "NATIONALITY": "Citizenship_CountryDescription"
+                  }
+              }
+          },
+          {
+              "NAME": "HM",
+              "FORMAT": "CSV",
+              "URL": "https://ofsistorage.blob.core.windows.net/publishlive/2022format/ConList.csv",
+              "PARAMS": {
+                  "skiprows": 1
+              },
+              "STEPS": {
+                  "SELECT_FIELDS": {
+                      "ID": "Group ID",
+                      "FULL_NAME": [
+                          "Name 1",
+                          "Name 2",
+                          "Name 3",
+                          "Name 4",
+                          "Name 5",
+                          "Name 6"
+                      ],
+                      "NAME_TYPE": "Group Type",
+                      "DATE_OF_BIRTH": "DOB",
+                      "COUNTRY_OF_BIRTH": "Country of Birth",
+                      "NATIONALITY": "Nationality"
+                  }
+              }
+          },
+          {
+              "NAME": "CONS_PRIM",
+              "FORMAT": "CSV",
+              "URL": "https://www.treasury.gov/ofac/downloads/consolidated/cons_prim.csv",
+              "PARAMS": {
+                  "na_values": "-0- ",
+                  "engine": "python",
+                  "skipfooter": 1,
+                  "names": [
+                      "ent_num",
+                      "sdn_name",
+                      "sdn_type",
+                      "program",
+                      "title",
+                      "call_sign",
+                      "vess_type",
+                      "tonnage",
+                      "grt",
+                      "vess_flag",
+                      "vess_owner",
+                      "remarks"
+                  ]
+              }
+          },
+          {
+              "NAME": "CONS_ALT",
+              "FORMAT": "CSV",
+              "URL": "https://www.treasury.gov/ofac/downloads/consolidated/cons_alt.csv",
+              "PARAMS": {
+                  "na_values": "-0- ",
+                  "engine": "python",
+                  "skipfooter": 1,
+                  "names": [
+                      "ent_num",
+                      "alt_num",
+                      "alt_type",
+                      "alt_name",
+                      "alt_remarks"
+                  ]
+              }
+          },
+          {
+              "NAME": "CONS_ADD",
+              "URL": "https://www.treasury.gov/ofac/downloads/consolidated/cons_add.csv",
+              "PARAMS": {
+                  "na_values": "-0- ",
+                  "engine": "python",
+                  "skipfooter": 1,
+                  "names": [
+                      "ent_num",
+                      "add_num",
+                      "address",
+                      "city_state_province_postalcode",
+                      "country",
+                      "address_remarks"
+                  ]
+              }
+          },
+          {
+              "NAME": "OFAC_SDN",
+              "FORMAT": "CSV",
+              "URL": "https://www.treasury.gov/ofac/downloads/sdn.csv",
+              "PARAMS": {
+                  "na_values": "-0- ",
+                  "engine": "python",
+                  "skipfooter": 1,
+                  "names": [
+                      "ent_num",
+                      "sdn_name",
+                      "sdn_type",
+                      "program",
+                      "title",
+                      "call_sign",
+                      "vess_type",
+                      "tonnage",
+                      "grt",
+                      "vess_flag",
+                      "vess_owner",
+                      "remarks"
+                  ]
+              }
+          },
+          {
+              "NAME": "OFAC_ALT",
+              "FORMAT": "CSV",
+              "URL": "https://www.treasury.gov/ofac/downloads/alt.csv",
+              "PARAMS": {
+                  "na_values": "-0- ",
+                  "engine": "python",
+                  "skipfooter": 1,
+                  "names": [
+                      "ent_num",
+                      "alt_num",
+                      "alt_type",
+                      "alt_name",
+                      "alt_remarks"
+                  ]
+              }
+          },
+          {
+              "NAME": "OFAC_ADD",
+              "URL": "https://www.treasury.gov/ofac/downloads/add.csv",
+              "PARAMS": {
+                  "na_values": "-0- ",
+                  "engine": "python",
+                  "skipfooter": 1,
+                  "names": [
+                      "ent_num",
+                      "add_num",
+                      "address",
+                      "city_state_province_postalcode",
+                      "country",
+                      "address_remarks"
+                  ]
+              }
+          },
+          {
+              "NAME": "AU_SANCTIONS",
+              "FORMAT": "XLSX",
+              "URL": "https://www.dfat.gov.au/sites/default/files/regulation8_consolidated.xlsx",
+              "PARAMS": {
+                  "names": [
+                      "reference",
+                      "full_name",
+                      "type",
+                      "name_type",
+                      "date_of_birth",
+                      "place_of_birth",
+                      "citizenship",
+                      "address",
+                      "additional_information",
+                      "listing_information",
+                      "committees",
+                      "control_date"
+                  ]
+              },
+              "STEPS": {
+                  "SELECT_FIELDS": {
+                      "ID": "reference",
+                      "FULL_NAME": "full_name",
+                      "NAME_TYPE": "name_type",
+                      "DATE_OF_BIRTH": "date_of_birth",
+                      "COUNTRY_OF_BIRTH": "place_of_birth",
+                      "NATIONALITY": "citizenship"
+                  }
+              }
+          },
+          {
+              "NAME": "UN",
+              "FORMAT": "XML",
+              "URL": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
+              "OUTPUT": [
+                  {
+                      "NAME": "UN_INDIVIDUAL",
+                      "XPATH": [
+                          "CONSOLIDATED_LIST",
+                          "INDIVIDUALS",
+                          "INDIVIDUAL"
+                      ],
+                      "STEPS": {
+                          "SELECT_FIELDS": {
+                              "ID": "DATAID",
+                              "FULL_NAME": [
+                                  "FIRST_NAME",
+                                  "SECOND_NAME",
+                                  "THIRD_NAME",
+                                  "FOURTH_NAME"
+                              ]
+                          },
+                          "ADD_COLUMNS": {
+                              "NAME_TYPE": "INDIVIDUAL"
+                          },
+                          "PARSE_COLUMN": {
+                              "DATE_OF_BIRTH": {
+                                  "REFERENCE": "DATAID",
+                                  "COLUMN_TO_PARSE": "INDIVIDUAL_DATE_OF_BIRTH",
+                                  "TARGET_COLUMN": "DATE"
+                              },
+                              "COUNTRY_OF_BIRTH": {
+                                  "REFERENCE": "DATAID",
+                                  "COLUMN_TO_PARSE": "INDIVIDUAL_PLACE_OF_BIRTH",
+                                  "TARGET_COLUMN": "COUNTRY"
+                              },
+                              "NATIONALITY": {
+                                  "REFERENCE": "DATAID",
+                                  "COLUMN_TO_PARSE": "NATIONALITY",
+                                  "TARGET_COLUMN": "VALUE"
+                              }
+                          }
+                      }
+                  },
+                  {
+                      "NAME": "UN_ENTITY",
+                      "XPATH": [
+                          "CONSOLIDATED_LIST",
+                          "ENTITIES",
+                          "ENTITY"
+                      ],
+                      "STEPS": {
+                          "SELECT_FIELDS": {
+                              "ID": "DATAID",
+                              "FULL_NAME": "FIRST_NAME"
+                          }
+                      }
+                  }
+              ]
+          },
+          {
+              "NAME": "CA_SANCTIONS",
+              "FORMAT": "XML",
+              "URL": "https://www.international.gc.ca/world-monde/assets/office_docs/international_relations-relations_internationales/sanctions/sema-lmes.xml",
+              "OUTPUT": [
+                  {
+                      "NAME": "CA_SANCTIONS",
+                      "XPATH": [
+                          "data-set",
+                          "record"
+                      ],
+                      "STEPS": {
+                          "SELECT_FIELDS": {
+                              "ID": "Item",
+                              "FULL_NAME": [
+                                  "GivenName",
+                                  "LastName"
+                              ],
+                              "DATE_OF_BIRTH": "DateOfBirth"
+                          }
+                      }
+                  }
+              ]
+          }
+      ]
+  },
+  {
+      "CONFIG_TYPE": "GENERAL",
+      "VALUE": {
+        "MIN_NAME_LENGTH": 5,
+        "SCREENING_THRESH": 0.8
+      }
+  }
+]
